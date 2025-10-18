@@ -1,0 +1,354 @@
+Modern Sophistication - Contemporary aesthetic without sacrificing professionalism
+Accessibility - Inclusive design that serves all users effectively
+
+
+Color Palette
+Primary Colors
+
+Primary Blue: #2563EB - Main brand color, CTAs, interactive elements
+Primary Dark: #1E40AF - Hover states, emphasis
+Primary Light: #DBEAFE - Backgrounds, subtle highlights
+
+Secondary Colors
+
+Success Green: #10B981 - Positive metrics, growth indicators
+Warning Amber: #F59E0B - Alerts, important notices
+Danger Red: #EF4444 - Negative metrics, critical alerts
+Info Purple: #8B5CF6 - Information highlights, secondary actions
+
+Neutral Colors
+
+Gray 900: #111827 - Primary text
+Gray 700: #374151 - Secondary text
+Gray 500: #6B7280 - Tertiary text, labels
+Gray 300: #D1D5DB - Borders, dividers
+Gray 100: #F3F4F6 - Card backgrounds
+Gray 50: #F9FAFB - Page background
+White: #FFFFFF - Card surfaces, modals
+
+Usage Guidelines
+
+Use Primary Blue sparingly for maximum impact on CTAs and key metrics
+Success/Danger colors should only be used to indicate financial performance
+Maintain 4.5:1 contrast ratio minimum for WCAG AA compliance
+Neutral grays form the backbone of the interface hierarchy
+
+
+Typography
+Font Family
+
+Primary: Inter (Google Fonts)
+Fallback: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif
+Monospace (for numbers): "Roboto Mono", "SF Mono", Monaco, monospace
+
+Type Scale
+Display Large:  48px / 56px line-height / 700 weight
+Display:        36px / 44px line-height / 700 weight
+Heading 1:      30px / 38px line-height / 600 weight
+Heading 2:      24px / 32px line-height / 600 weight
+Heading 3:      20px / 28px line-height / 600 weight
+Heading 4:      18px / 26px line-height / 600 weight
+Body Large:     16px / 24px line-height / 400 weight
+Body:           14px / 20px line-height / 400 weight
+Body Small:     12px / 18px line-height / 400 weight
+Caption:        11px / 16px line-height / 500 weight
+Number Formatting
+
+Use monospace fonts for all numerical data
+Include proper comma separators (1,234.56)
+Currency symbols should precede amounts ($1,234.56)
+Percentage symbols follow values (45.2%)
+Color-code positive (green) and negative (red) values
+
+
+Layout & Grid System
+Container
+
+Max Width: 1440px
+Padding: 24px (desktop), 16px (mobile)
+Centered with auto margins
+
+Grid System
+
+12-column grid with 24px gutters
+Responsive breakpoints:
+
+Mobile: 0-640px (1 column layouts)
+Tablet: 641-1024px (2-3 column layouts)
+Desktop: 1025px+ (3-4 column layouts)
+
+
+
+Spacing Scale
+Based on 8px increments:
+4px   - Micro spacing (icon padding)
+8px   - XS (tight element spacing)
+12px  - SM (compact spacing)
+16px  - MD (standard spacing)
+24px  - LG (section spacing)
+32px  - XL (major section breaks)
+48px  - 2XL (page sections)
+64px  - 3XL (major page divisions)
+
+Components
+Navigation
+Top Navigation Bar
+
+Height: 64px
+Background: White with subtle shadow
+Logo: Left-aligned, 32px height
+User Menu: Right-aligned with avatar (40px circle)
+Search: Center or right section, expandable on mobile
+Sticky behavior on scroll
+
+Sidebar Navigation
+
+Width: 240px (expanded), 64px (collapsed)
+Background: Gray 50
+Active State: Primary Blue with left border accent (4px)
+Icons: 20px with 8px right margin when expanded
+Hover: Gray 100 background
+Collapsible on mobile to overlay
+
+Cards
+Standard Card
+
+Background: White
+Border Radius: 12px
+Shadow: 0 1px 3px rgba(0,0,0,0.1)
+Padding: 24px
+Hover: Subtle elevation increase (0 4px 6px rgba(0,0,0,0.1))
+
+Metric Card
+
+Layout: Icon/value stacked or side-by-side
+Value: Display or Heading 1 size, monospace
+Label: Body Small, Gray 500
+Trend Indicator: Arrow icon + percentage in Success/Danger color
+Background: Optional subtle gradient for emphasis
+
+Charts & Data Visualization
+General Guidelines
+
+Colors: Use primary palette, avoid random colors
+Grid Lines: Gray 200, minimal and subtle
+Tooltips: White background, shadow, 14px text
+Animations: Smooth transitions (300ms ease)
+Responsiveness: Scale appropriately on all devices
+
+Chart Types
+
+Line Charts: Trends over time (revenue, expenses)
+Bar Charts: Comparisons (monthly breakdown)
+Pie/Donut Charts: Proportions (budget allocation)
+Area Charts: Cumulative data (portfolio growth)
+
+Tables
+Data Tables
+
+Header: Gray 50 background, Gray 700 text, 12px uppercase
+Row Height: 56px
+Borders: Bottom only, Gray 200
+Hover: Gray 50 background
+Alternating Rows: Optional for dense data
+Sortable: Arrow indicators on hover
+Pagination: Bottom center, showing "Showing X-Y of Z"
+
+Buttons
+Primary Button
+
+Background: Primary Blue
+Text: White, 14px, 600 weight
+Padding: 10px 20px
+Border Radius: 8px
+Hover: Primary Dark
+Active: Slightly darker with inset shadow
+
+Secondary Button
+
+Background: Transparent
+Border: 1px solid Gray 300
+Text: Gray 700
+Hover: Gray 50 background
+
+Ghost Button
+
+Background: Transparent
+Text: Primary Blue
+Hover: Primary Light background
+
+Form Elements
+Input Fields
+
+Height: 40px
+Border: 1px solid Gray 300
+Border Radius: 6px
+Focus: Primary Blue border (2px)
+Padding: 10px 12px
+Font Size: 14px
+
+Dropdowns/Selects
+
+Same styling as inputs
+Chevron icon right-aligned
+Dropdown menu: White, shadow, 8px border radius
+
+
+Dashboard Layout
+Overview Page Structure
+┌─────────────────────────────────────────────────┐
+│ Top Navigation (64px)                           │
+├──────┬──────────────────────────────────────────┤
+│ Side │ Page Header (72px)                       │
+│ Nav  │ "Financial Overview" + Date Selector     │
+│      ├──────────────────────────────────────────┤
+│ 240  │ KPI Cards Row (4 cards)                  │
+│ px   │ • Total Balance                          │
+│      │ • Monthly Income                         │
+│      │ • Monthly Expenses                       │
+│      │ • Net Savings                            │
+│      ├──────────────────────────────────────────┤
+│      │ Main Content (2-column)                  │
+│      │ ┌──────────────┬──────────────────────┐ │
+│      │ │ Revenue      │ Recent Transactions   │ │
+│      │ │ Chart        │ Table                 │ │
+│      │ │              │                       │ │
+│      │ ├──────────────┼──────────────────────┤ │
+│      │ │ Spending     │ Budget Overview       │ │
+│      │ │ Breakdown    │ Progress Bars         │ │
+│      │ │ (Donut)      │                       │ │
+│      │ └──────────────┴──────────────────────┘ │
+└──────┴──────────────────────────────────────────┘
+
+Interactions & Microanimations
+Transitions
+
+Default Duration: 200-300ms
+Easing: ease-in-out for most, ease-out for entrances
+Properties: opacity, transform, background-color
+Page Transitions: Smooth fade (150ms)
+
+Hover States
+
+Cards: Subtle elevation increase
+Buttons: Background color change
+Links: Underline appears with slide animation
+Chart Elements: Highlight with scale increase (1.05x)
+
+Loading States
+
+Skeleton Screens: Gray 100 with shimmer animation
+Spinners: Primary Blue, 32px for full-page, 16px for inline
+Progress Bars: Smooth animated width transitions
+
+Feedback
+
+Success: Green toast notification (top-right, 4s duration)
+Error: Red toast with icon (persistent until dismissed)
+Confirmation Modals: Subtle backdrop blur effect
+
+
+Responsive Behavior
+Mobile (< 640px)
+
+Single column layout
+Sidebar collapses to hamburger menu
+Cards stack vertically
+Charts simplify (fewer data points visible)
+Tables switch to card-based mobile view
+
+Tablet (641-1024px)
+
+2-column layout where appropriate
+Sidebar remains visible but can collapse
+Charts maintain full functionality
+Tables may horizontal scroll if needed
+
+Desktop (1025px+)
+
+Full 3-4 column layouts
+All features fully accessible
+Optimal chart sizes
+Tables show all columns
+
+
+Accessibility Requirements
+WCAG 2.1 AA Compliance
+
+Minimum contrast ratio 4.5:1 for text
+Focus indicators visible (2px Primary Blue outline)
+Keyboard navigation fully supported
+Screen reader friendly labels
+Alternative text for all visual data
+Skip navigation links
+Resizable text up to 200%
+
+Additional Considerations
+
+No information conveyed by color alone
+Sufficient touch targets (44x44px minimum)
+Reduced motion preferences respected
+Clear error messages with suggestions
+Consistent navigation across all pages
+
+
+Dark Mode (Optional Future Enhancement)
+Color Adaptations
+
+Background: Gray 900
+Cards: Gray 800
+Text: White / Gray 100
+Primary Blue: Lighter shade (#60A5FA)
+Reduce shadow intensity
+Maintain contrast ratios
+
+
+Design Tokens (CSS Variables)
+css:root {
+  /* Colors */
+  --primary: #2563EB;
+  --primary-dark: #1E40AF;
+  --primary-light: #DBEAFE;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --info: #8B5CF6;
+  
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Typography */
+  --font-primary: 'Inter', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+  
+  /* Borders */
+  --border-radius-sm: 6px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+}
+
+Implementation Notes
+Performance
+
+Lazy load charts and heavy components
+Optimize images (WebP format, appropriate sizing)
+Code splitting for different dashboard sections
+Cache API responses where appropriate
+Debounce search and filter inputs
+
+Browser Support
+
+Chrome (last 2 versions)
+Firefox (last 2 versions)
+Safari (last 2 versions)
+Edge (last 2 versions)
+Progressive enhancement for older browsers
