@@ -22,13 +22,17 @@ export class OBSGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleConnection(client: WebSocket, request: IncomingMessage): void {
     this.logger.log('New OBS client attempting to connect...');
+
+    // Attach message listener for raw WebSocket messages
+    client.on('message', async (data: Buffer) => {
+      await this.handleMessage(client, data.toString());
+    });
   }
 
   async handleDisconnect(client: WebSocket): Promise<void> {
     await this.clientService.removeClient(client);
   }
 
-  @SubscribeMessage('message')
   async handleMessage(client: WebSocket, payload: string): Promise<void> {
     try {
       const data: OBSMessage = JSON.parse(payload);
