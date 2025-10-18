@@ -1,13 +1,19 @@
 # OBS Bridge
 
-A Python application that connects OBS Studio to a central website for remote control.
+Applications that connect OBS Studio to a central website for remote control.
+
+## Available Platforms
+
+- **🐍 Python Bridge** - Cross-platform command-line tool ([Setup Guide](#python-bridge-setup))
+- **🍎 macOS App** - Native macOS application ([Bridge Documentation](bridge/README.md))
+- **🪟 Windows App** - Native Windows 11 application ([Windows Documentation](windows-app/README.md))
 
 ## Architecture
 
 ```
 ┌─────────────┐         WebSocket          ┌──────────────────┐
 │   Website   │ ◄────────────────────────► │  OBS Bridge      │
-│  (Server)   │     (Bridge initiates)     │   (Python App)   │
+│  (Server)   │     (Bridge initiates)     │ (Your Platform)  │
 └─────────────┘                            └────────┬─────────┘
                                                     │
                                                     │ Local
@@ -27,8 +33,25 @@ A Python application that connects OBS Studio to a central website for remote co
 - ✅ Supports multiple OBS commands
 - ✅ Automatic reconnection handling
 - ✅ Secure password authentication
+- ✅ Native applications for macOS and Windows with GUI
+- ✅ Cross-platform Python CLI version
 
-## Prerequisites
+## Quick Start
+
+### For Windows 11 Users
+👉 [Windows Quick Start Guide](windows-app/QUICKSTART.md)
+
+### For macOS Users
+👉 [macOS Quick Start Guide](bridge/QUICKSTART.md)
+
+### For Python/CLI Users
+👉 Continue reading below for Python setup
+
+---
+
+## Python Bridge Setup
+
+### Prerequisites
 
 1. **OBS Studio 28+** (includes obs-websocket built in)
 2. **Python 3.7+**
