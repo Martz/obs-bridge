@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBS Remote Control Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            margin-bottom: 1rem;
+            color: #333;
+            font-size: 1.25rem;
+        }
+
+        .clients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .client-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .client-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .client-card.selected {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .client-id {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .client-status {
+            font-size: 0.875rem;
+            color: #718096;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.danger {
+            background: #f56565;
+        }
+
+        button.danger:hover {
+            background: #e53e3e;
+        }
+
+        button.success {
+            background: #48bb78;
+        }
+
+        button.success:hover {
+            background: #38a169;
+        }
+
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .log {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin-bottom: 0.25rem;
+        }
+
+        .log-entry.info {
+            color: #90cdf4;
+        }
+
+        .log-entry.success {
+            color: #9ae6b4;
+        }
+
+        .log-entry.error {
+            color: #fc8181;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-indicator.online {
+            background: #48bb78;
+        }
+
+        .status-indicator.offline {
+            background: #cbd5e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OBS Remote Control Panel</h1>
+
+        <div class="card">
+            <h2>Connected OBS Clients</h2>
+            <div id="clients" class="clients-grid">
+                <p style="color: #718096;">Loading clients...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Stream Controls</h2>
+            <div class="controls">
+                <button class="success" onclick="sendAction('start-stream')">▶ Start Stream</button>
+                <button class="danger" onclick="sendAction('stop-stream')">⏹ Stop Stream</button>
+                <button class="success" onclick="sendAction('start-recording')">⏺ Start Recording</button>
+                <button class="danger" onclick="sendAction('stop-recording')">⏹ Stop Recording</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Information</h2>
+            <div class="controls">
+                <button onclick="sendAction('status')">📊 Get Status</button>
+                <button onclick="sendAction('scenes')">🎬 Get Scenes</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Activity Log</h2>
+            <div id="log" class="log">
+                <div class="log-entry info">System initialized</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedClient = null;
+        const API_BASE = 'http://localhost:8000';
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        async function loadClients() {
+            try {
+                const response = await fetch(`${API_BASE}/api/clients`);
+                const data = await response.json();
+
+                const clientsDiv = document.getElementById('clients');
+
+                if (data.clients.length === 0) {
+                    clientsDiv.innerHTML = '<p style="color: #718096;">No clients connected</p>';
+                    selectedClient = null;
+                    return;
+                }
+
+                clientsDiv.innerHTML = '';
+                data.clients.forEach(client => {
+                    const card = document.createElement('div');
+                    card.className = 'client-card';
+                    if (selectedClient === client.clientId) {
+                        card.classList.add('selected');
+                    }
+
+                    card.innerHTML = `
+                        <div class="client-id">
+                            <span class="status-indicator online"></span>
+                            ${client.clientId}
+                        </div>
+                        <div class="client-status">
+                            Connected: ${new Date(client.connected).toLocaleTimeString()}
+                        </div>
+                    `;
+
+                    card.onclick = () => {
+                        selectedClient = client.clientId;
+                        log(`Selected client: ${client.clientId}`, 'info');
+                        loadClients(); // Refresh to show selection
+                    };
+
+                    clientsDiv.appendChild(card);
+                });
+
+                // Auto-select first client if none selected
+                if (!selectedClient && data.clients.length > 0) {
+                    selectedClient = data.clients[0].clientId;
+                    log(`Auto-selected client: ${selectedClient}`, 'info');
+                }
+
+            } catch (error) {
+                log(`Failed to load clients: ${error.message}`, 'error');
+            }
+        }
+
+        async function sendAction(action) {
+            if (!selectedClient) {
+                log('No client selected!', 'error');
+                return;
+            }
+
+            try {
+                log(`Sending '${action}' to ${selectedClient}...`, 'info');
+
+                const response = await fetch(`${API_BASE}/api/action/${selectedClient}/${action}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    log(`✓ ${data.message}`, 'success');
+                } else {
+                    log(`✗ ${data.error || 'Command failed'}`, 'error');
+                }
+            } catch (error) {
+                log(`Failed to send action: ${error.message}`, 'error');
+            }
+        }
+
+        // Refresh clients every 5 seconds
+        setInterval(loadClients, 5000);
+
+        // Initial load
+        loadClients();
+        log('Control panel ready', 'success');
+    </script>
+</body>
+</html>
