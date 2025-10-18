@@ -1,4 +1,4 @@
-# OBS Bridge
+# OBS Recording Scheduler
 
 Applications that connect OBS Studio to a central website for remote control.
 
@@ -7,8 +7,9 @@ Applications that connect OBS Studio to a central website for remote control.
 - **🐍 Python Bridge** - Cross-platform command-line tool ([Setup Guide](#python-bridge-setup))
 - **🍎 macOS App** - Native macOS application ([Bridge Documentation](bridge/README.md))
 - **🪟 Windows App** - Native Windows 11 application ([Windows Documentation](windows-app/README.md))
+A complete system for scheduling and remotely controlling OBS (Open Broadcaster Software) recording sessions. This monorepo contains multiple interconnected applications that work together to provide a comprehensive OBS remote control and scheduling solution.
 
-## Architecture
+## 🎯 Project Overview
 
 ```
 ┌─────────────┐         WebSocket          ┌──────────────────┐
@@ -23,9 +24,40 @@ Applications that connect OBS Studio to a central website for remote control.
                                                │   OBS    │
                                                │  Studio  │
                                                └──────────┘
+This system allows you to:
+
+- **Schedule OBS recording sessions** through a web interface
+- **Remotely control OBS instances** from anywhere via WebSocket
+- **Manage multiple OBS installations** from a central control panel
+- **Administer bookings, users, and schedules** through an admin dashboard
+
+## 📦 Project Structure
+
+This repository contains five main components:
+
+### 1. **Bridge** (`/bridge`)
+
+A **native macOS application** that connects OBS Studio to the central server for remote control.
+
+**Tech Stack:** Swift, SwiftUI, macOS 13.0+
+
+**Features:**
+
+- Native macOS interface with real-time status indicators
+- Secure credential storage
+- Auto-connect on startup
+- Activity logging
+- Settings panel for easy configuration
+
+**Getting Started:**
+
+```bash
+cd bridge
+open OBSBridge.xcodeproj
+# Build and run in Xcode (⌘R)
 ```
 
-## Features
+📖 [Full Documentation](bridge/README.md) | [Quick Start Guide](bridge/QUICKSTART.md)
 
 - ✅ Connects OBS to your website (outbound connection, firewall friendly)
 - ✅ Remote control OBS from anywhere
@@ -52,185 +84,386 @@ Applications that connect OBS Studio to a central website for remote control.
 ## Python Bridge Setup
 
 ### Prerequisites
+---
 
-1. **OBS Studio 28+** (includes obs-websocket built in)
-2. **Python 3.7+**
+### 2. **Server API** (`/server-api`)
 
-## Setup
+A **NestJS-based backend** that provides WebSocket and REST APIs for controlling OBS instances.
 
-### 1. Enable OBS WebSocket
+**Tech Stack:** NestJS, TypeScript, WebSocket, Express
+
+**Features:**
+
+- WebSocket server for OBS client connections
+- REST API for sending commands to OBS
+- Client registration and management
+- Automatic health checks (ping every 30s)
+- Event handling from OBS
+- Demo control panel included
+
+**Getting Started:**
+
+```bash
+cd server-api
+npm install
+npm run start:dev
+# Server runs on http://localhost:8000
+```
+
+**Key Endpoints:**
+
+- `ws://localhost:8000/obs` - WebSocket endpoint
+- `GET /api/clients` - List connected clients
+- `POST /api/command/:clientId` - Send command to specific client
+- `POST /api/action/:clientId/:action` - Quick actions (start-stream, stop-stream, etc.)
+- `GET /health` - Health check
+
+📖 [Full Documentation](server-api/README.md)
+
+---
+
+### 3. **Frontend** (`/frontend`)
+
+A **React-based user interface** for browsing schedules and booking recording sessions.
+
+**Tech Stack:** React, TypeScript, Vite, Tailwind CSS, shadcn/ui
+
+**Features:**
+
+- Interactive calendar for date selection
+- Available time slot browsing
+- OBS instance and scene selection
+- Responsive design with dark/light mode
+- User profile management
+
+**Getting Started:**
+
+```bash
+cd frontend
+npm install
+npm run dev
+# Open http://localhost:5173
+```
+
+📖 [Full Documentation](frontend/README.md)
+
+---
+
+### 4. **Admin Panel** (`/admin-panel`)
+
+A **Next.js admin dashboard** for managing bookings, users, schedules, and OBS instances.
+
+**Tech Stack:** Next.js 14, TypeScript, React, Tailwind CSS, shadcn/ui
+
+**Features:**
+
+- Booking management interface
+- User administration
+- Schedule configuration
+- OBS instance monitoring
+- Settings management
+
+**Getting Started:**
+
+```bash
+cd admin-panel
+npm install
+npm run dev
+# Open http://localhost:3000
+```
+
+📖 [Full Documentation](admin-panel/README.md)
+
+---
+
+### 5. **Python Bridge** (Root: `obs_bridge.py`)
+
+A **Python-based alternative bridge** for cross-platform OBS connectivity.
+
+**Tech Stack:** Python 3.7+, obs-websocket-py
+
+**Features:**
+
+- Cross-platform support (Windows, macOS, Linux)
+- Command-line interface
+- Automatic reconnection
+- Configuration via `.env` file
+
+**Getting Started:**
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure
+cp .env.example .env
+# Edit .env with your settings
+
+# Run
+python obs_bridge.py
+```
+
+📖 See [Python Bridge Configuration](#-python-bridge-configuration) below for details
+
+---
+
+## 🚀 Quick Start (Full System)
+
+Get the entire system running in 5 minutes! See [QUICKSTART.md](QUICKSTART.md) for detailed instructions.
+
+### Prerequisites
+
+- OBS Studio 28+
+- Node.js 18+
+- Python 3.7+ (for Python bridge)
+- macOS 13+ (for native bridge app)
+
+### Minimal Setup
+
+1. **Enable OBS WebSocket:**
+   - Open OBS → Tools → WebSocket Server Settings
+   - Enable WebSocket server, set password, note port (4455)
+
+2. **Start the API Server:**
+
+   ```bash
+   cd server-api
+   npm install && npm run start:dev
+   ```
+
+3. **Connect a Bridge:**
+
+   **Option A - Python Bridge:**
+
+   ```bash
+   # Configure .env with OBS settings
+   python obs_bridge.py
+   ```
+
+   **Option B - macOS Native App:**
+
+   ```bash
+   cd bridge
+   open OBSBridge.xcodeproj
+   # Build and configure in Xcode
+   ```
+
+4. **Open Control Panel:**
+
+   ```text
+   http://localhost:8000
+   ```
+
+## 🏗️ System Architecture
+
+```text
+┌──────────────────┐         REST/WS           ┌──────────────────┐
+│  Admin Panel     │ ◄────────────────────────►│                  │
+│  (Next.js)       │                            │   API Server     │
+└──────────────────┘                            │   (NestJS)       │
+                                                │                  │
+┌──────────────────┐         REST/WS           │  Port: 8000      │
+│  Frontend        │ ◄────────────────────────►│                  │
+│  (React)         │                            │  WebSocket: /obs │
+└──────────────────┘                            └────────┬─────────┘
+                                                         │
+                                                         │ WebSocket
+                                              ┌──────────┴──────────┐
+                                              │                     │
+                                    ┌─────────▼──────┐   ┌─────────▼──────┐
+                                    │  Bridge        │   │  Bridge        │
+                                    │  (macOS/Python)│   │  (macOS/Python)│
+                                    └────────┬───────┘   └────────┬───────┘
+                                             │                    │
+                                             │ Local WS           │ Local WS
+                                             │                    │
+                                      ┌──────▼──────┐      ┌──────▼──────┐
+                                      │ OBS Studio  │      │ OBS Studio  │
+                                      │ Instance 1  │      │ Instance 2  │
+                                      └─────────────┘      └─────────────┘
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+**Python Bridge (`.env`):**
+
+```env
+OBS_HOST=localhost
+OBS_PORT=4455
+OBS_PASSWORD=your-password
+WEBSITE_URL=ws://localhost:8000/obs
+CLIENT_ID=obs-client-1
+```
+
+**Server API:**
+
+```env
+PORT=8000
+```
+
+### OBS Setup
 
 1. Open OBS Studio
-2. Go to **Tools → WebSocket Server Settings**
-3. Check **Enable WebSocket server**
-4. Note the **Server Port** (default: 4455)
-5. Set a **Server Password**
-6. Click **Apply**
+2. Tools → WebSocket Server Settings
+3. Enable WebSocket server
+4. Set password and note port (default: 4455)
+5. Apply settings
 
-### 2. Install Python Dependencies
+## 📡 API Documentation
+
+### OBS Commands
+
+Send commands via REST API or WebSocket:
+
+**Common Commands:**
+
+- `StartStreaming` - Start streaming
+- `StopStreaming` - Stop streaming
+- `StartRecording` - Start recording
+- `StopRecording` - Stop recording
+- `GetStreamingStatus` - Get current status
+- `GetSceneList` - List all scenes
+- `SetCurrentScene` - Switch scene
+
+**Example:**
+
+```bash
+curl -X POST http://localhost:8000/api/action/my-client/start-stream
+```
+
+See [server-api/README.md](server-api/README.md) for complete API documentation.
+
+## 🛠️ Development
+
+### Install All Dependencies
+
+```bash
+# Root dependencies (example server)
+npm install
+
+# Server API
+cd server-api && npm install
+
+# Frontend
+cd ../frontend && npm install
+
+# Admin Panel
+cd ../admin-panel && npm install
+
+# Python bridge
+pip install -r requirements.txt
+```
+
+### Running in Development
+
+Each project has its own development server. Open separate terminals:
+
+```bash
+# Terminal 1 - API Server
+cd server-api && npm run start:dev
+
+# Terminal 2 - Frontend
+cd frontend && npm run dev
+
+# Terminal 3 - Admin Panel
+cd admin-panel && npm run dev
+
+# Terminal 4 - Python Bridge
+python obs_bridge.py
+```
+
+## 🧪 Testing
+
+```bash
+# Test OBS connection
+cd bridge && ./test-obs-connection.sh
+
+# Server API tests
+cd server-api && npm run test
+
+# Frontend tests
+cd frontend && npm run test
+```
+
+## 📝 Python Bridge Configuration
+
+The Python bridge (`obs_bridge.py`) provides cross-platform OBS connectivity.
+
+**Installation:**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configure the Bridge
-
-Copy the example environment file:
+**Configuration:**
 
 ```bash
 cp .env.example .env
+# Edit .env with your OBS and server settings
 ```
 
-Edit `.env` with your settings:
-
-```env
-# OBS WebSocket Configuration
-OBS_HOST=localhost
-OBS_PORT=4455
-OBS_PASSWORD=your-obs-password
-
-# Website WebSocket URL
-WEBSITE_URL=ws://your-website.com/obs
-
-# Optional: Unique identifier for this OBS client
-CLIENT_ID=obs-client-1
-```
-
-### 4. Run the Bridge
+**Usage:**
 
 ```bash
 python obs_bridge.py
 ```
 
-You should see:
+**Features:**
 
-```
-✓ Connected to OBS
-✓ Connected to website
-OBS Bridge is running. Press Ctrl+C to stop.
-```
+- Cross-platform (Windows, macOS, Linux)
+- Automatic reconnection
+- Event forwarding
+- Command execution
+- Secure authentication
 
-## Message Protocol
+## 🔍 Troubleshooting
 
-### Messages from Website to OBS
-
-The website sends commands to control OBS:
-
-```json
-{
-  "type": "command",
-  "command": "StartStreaming",
-  "params": {}
-}
-```
-
-Common commands:
-- `StartStreaming` - Start streaming
-- `StopStreaming` - Stop streaming
-- `StartRecording` - Start recording
-- `StopRecording` - Stop recording
-- `SetCurrentScene` - Switch scene (params: `{"scene-name": "Scene Name"}`)
-- `GetSceneList` - Get list of all scenes
-- `GetStreamingStatus` - Get current streaming/recording status
-
-### Messages from OBS to Website
-
-The bridge sends events and responses to the website:
-
-**Registration:**
-```json
-{
-  "type": "register",
-  "clientId": "obs-client-1"
-}
-```
-
-**OBS Events:**
-```json
-{
-  "type": "obs_event",
-  "clientId": "obs-client-1",
-  "event": "StreamStarted",
-  "data": {}
-}
-```
-
-**Command Responses:**
-```json
-{
-  "type": "command_response",
-  "clientId": "obs-client-1",
-  "command": "GetSceneList",
-  "success": true,
-  "data": {
-    "scenes": [...],
-    "current-scene": "Scene 1"
-  }
-}
-```
-
-## Website Server Example
-
-Your website needs a WebSocket server to accept connections. Here's a basic Node.js example:
-
-```javascript
-const WebSocket = require('ws');
-
-const wss = new WebSocket.Server({ port: 8000, path: '/obs' });
-
-wss.on('connection', (ws) => {
-  console.log('OBS client connected');
-
-  ws.on('message', (message) => {
-    const data = JSON.parse(message);
-    console.log('Received:', data);
-
-    if (data.type === 'register') {
-      console.log(`Client registered: ${data.clientId}`);
-    }
-  });
-
-  // Send a command to OBS
-  ws.send(JSON.stringify({
-    type: 'command',
-    command: 'GetSceneList',
-    params: {}
-  }));
-});
-```
-
-## Troubleshooting
-
-### Cannot connect to OBS
+**Bridge can't connect to OBS:**
 
 - Ensure OBS is running
-- Check that obs-websocket is enabled in OBS settings
-- Verify the port and password in `.env` match OBS settings
+- Verify WebSocket is enabled in OBS settings
+- Check password and port in configuration
 
-### Cannot connect to website
+**API server not starting:**
 
-- Check that `WEBSITE_URL` is correct
-- Ensure your website's WebSocket server is running
-- Check firewall settings
+- Check if port 8000 is available
+- Install dependencies: `npm install`
+- Check Node.js version (18+)
 
-### Commands not working
+**Frontend/Admin panel won't load:**
 
-- Check OBS logs: Help → Log Files → View Current Log
-- Enable debug logging in the bridge (modify `logging.basicConfig` level to `DEBUG`)
+- Verify API server is running
+- Check browser console for errors
+- Clear browser cache
 
-## Development
+See individual project READMEs for detailed troubleshooting.
 
-To modify the bridge for your specific needs, edit `obs_bridge.py`. Key areas:
+## 🤝 Contributing
 
-- **`handle_website_message()`** - Add custom command handlers
-- **`on_obs_event()`** - Filter or transform OBS events before forwarding
-- **`connect_to_website()`** - Modify authentication/registration logic
+Contributions welcome! Please:
 
-## References
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-- [obs-websocket Documentation](https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md)
-- [obs-websocket-py Library](https://github.com/Elektordi/obs-websocket-py)
-
-## Licence
+## 📄 License
 
 MIT
+
+## 🔗 Additional Resources
+
+- [OBS WebSocket Protocol](https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md)
+- [NestJS Documentation](https://docs.nestjs.com/)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Documentation](https://react.dev/)
+
+## 📞 Support
+
+For issues and questions:
+
+- Check project-specific READMEs in each folder
+- Review [QUICKSTART.md](QUICKSTART.md) for setup help
+- Review [TROUBLESHOOTING.md](bridge/TROUBLESHOOTING.md) for common issues
