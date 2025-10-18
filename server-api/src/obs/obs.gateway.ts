@@ -44,6 +44,7 @@ export class OBSGateway implements OnGatewayConnection, OnGatewayDisconnect {
             await this.clientService.registerClient(clientId, client);
             // Send initial status requests
             this.clientService.sendCommand(clientId, 'GetStreamingStatus');
+            this.clientService.sendCommand(clientId, 'GetRecordingStatus');
             this.clientService.sendCommand(clientId, 'GetSceneList');
           }
           break;
@@ -65,6 +66,9 @@ export class OBSGateway implements OnGatewayConnection, OnGatewayDisconnect {
             data: data.data,
             error: data.error,
           });
+          if (clientId) {
+            await this.clientService.handleCommandResponse(clientId, data);
+          }
           break;
 
         case 'pong':

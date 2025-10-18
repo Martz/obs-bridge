@@ -24,6 +24,8 @@ class BridgeManager: ObservableObject {
         self.websiteClient = WebsiteWebSocketClient(settings: settings)
 
         setupWebsiteMessageHandler()
+        setupOBSEventHandler()
+        setupOBSResponseHandler()
         observeConnectionStates()
     }
 
@@ -75,6 +77,40 @@ class BridgeManager: ObservableObject {
     private func setupWebsiteMessageHandler() {
         websiteClient.onMessageReceived = { [weak self] command, params in
             self?.handleCommand(command: command, params: params)
+        }
+    }
+
+    private func setupOBSEventHandler() {
+        obsClient.onEventReceived = { [weak self] eventType, eventData in
+            guard let self = self else { return }
+            self.addLog("⚡ OBS Event: \(eventType)", level: .info)
+            self.websiteClient.sendEvent(event: eventType, data: eventData)
+        }
+    }
+
+    private func setupOBSResponseHandler() {
+        obsClient.onCommandResponse = { [weak self] requestId, success, data in
+            guard let self = self else { return }
+            guard let pending = self.pendingRequests[requestId] else {
+                print("Received response for unknown request: \(requestId)")
+                return
+            }
+
+            let command = pending.command
+            self.pendingRequests.removeValue(forKey: requestId)
+
+            if success {
+                self.addLog("✓ Command '\(command)' executed successfully", level: .success)
+            } else {
+                self.addLog("✗ Command '\(command)' failed", level: .error)
+            }
+
+            self.websiteClient.sendCommandResponse(
+                command: command,
+                success: success,
+                data: data,
+                error: success ? nil : "Command failed"
+            )
         }
     }
 
@@ -144,18 +180,7 @@ class BridgeManager: ObservableObject {
         addLog("→ Sending to OBS: \(mappedCommand)", level: .info)
         obsClient.executeCommand(command: mappedCommand, params: mappedParams, requestId: requestId)
 
-        // For demo purposes, send success response immediately
-        // In production, you'd wait for OBS response
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            self?.addLog("✓ Command executed successfully", level: .success)
-            self?.websiteClient.sendCommandResponse(
-                command: command,
-                success: true,
-                data: [:],
-                error: nil
-            )
-            self?.pendingRequests.removeValue(forKey: requestId)
-        }
+        // Response will be handled by setupOBSResponseHandler callback
     }
 
     private func mapCommandToOBSRequest(_ command: String) -> String {
@@ -167,7 +192,8 @@ class BridgeManager: ObservableObject {
             "StartRecording": "StartRecord",
             "StopRecording": "StopRecord",
             "GetSceneList": "GetSceneList",
-            "GetStreamingStatus": "GetStreamStatus"
+            "GetStreamingStatus": "GetStreamStatus",
+            "GetRecordingStatus": "GetRecordStatus"
         ]
 
         return mapping[command] ?? command

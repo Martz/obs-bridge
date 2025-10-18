@@ -122,7 +122,45 @@ export class OBSClientService {
   }
 
   async handleOBSEvent(clientId: string, message: OBSMessage): Promise<void> {
+    const eventData = message.data as any;
+
     switch (message.event) {
+      // OBS WebSocket v5 events
+      case 'StreamStateChanged':
+        const streaming = eventData?.outputActive === true;
+        this.logger.log(`${streaming ? '🔴' : '⏹️'} Stream ${streaming ? 'started' : 'stopped'} on ${clientId}`);
+        await this.instanceService.updateStatus(clientId, 'online', {
+          isStreaming: streaming,
+          lastSeenAt: new Date(),
+        });
+        break;
+
+      case 'RecordStateChanged':
+        const recording = eventData?.outputActive === true;
+        this.logger.log(`${recording ? '⏺️' : '⏹️'} Recording ${recording ? 'started' : 'stopped'} on ${clientId}`);
+        await this.instanceService.updateStatus(clientId, 'online', {
+          isRecording: recording,
+          lastSeenAt: new Date(),
+        });
+        break;
+
+      case 'CurrentProgramSceneChanged':
+        this.logger.log(`🎬 Scene changed on ${clientId}:`, eventData);
+        await this.instanceService.updateStatus(clientId, 'online', {
+          currentScene: eventData?.sceneName as string | undefined,
+          lastSeenAt: new Date(),
+        });
+        break;
+
+      case 'SceneListChanged':
+        const scenes = (eventData?.scenes as any[] || []).map(s => s.sceneName || s);
+        await this.instanceService.updateStatus(clientId, 'online', {
+          scenes: scenes,
+          lastSeenAt: new Date(),
+        });
+        break;
+
+      // Legacy OBS WebSocket v4 events (kept for backward compatibility)
       case 'StreamStarted':
         this.logger.log(`🔴 Stream started on ${clientId}`);
         await this.instanceService.updateStatus(clientId, 'online', {
@@ -158,14 +196,7 @@ export class OBSClientService {
       case 'SwitchScenes':
         this.logger.log(`🎬 Scene changed on ${clientId}:`, message.data);
         await this.instanceService.updateStatus(clientId, 'online', {
-          currentScene: (message.data as any)?.sceneName as string | undefined,
-          lastSeenAt: new Date(),
-        });
-        break;
-
-      case 'SceneListChanged':
-        await this.instanceService.updateStatus(clientId, 'online', {
-          scenes: ((message.data as any)?.scenes as string[]) || [],
+          currentScene: eventData?.sceneName as string | undefined,
           lastSeenAt: new Date(),
         });
         break;
@@ -175,6 +206,43 @@ export class OBSClientService {
           `Event from ${clientId}: ${message.event}`,
           message.data,
         );
+    }
+  }
+
+  async handleCommandResponse(clientId: string, message: OBSMessage): Promise<void> {
+    if (!message.success || !message.data) {
+      return;
+    }
+
+    switch (message.command) {
+      case 'GetStreamingStatus':
+        this.logger.log(`Updating streaming status for ${clientId}:`, message.data);
+        // OBS WebSocket v5 uses 'outputActive' for streaming status
+        await this.instanceService.updateStatus(clientId, 'online', {
+          isStreaming: (message.data as any).outputActive === true,
+          lastSeenAt: new Date(),
+        });
+        break;
+
+      case 'GetRecordingStatus':
+        this.logger.log(`Updating recording status for ${clientId}:`, message.data);
+        // OBS WebSocket v5 uses 'outputActive' for recording status
+        await this.instanceService.updateStatus(clientId, 'online', {
+          isRecording: (message.data as any).outputActive === true,
+          lastSeenAt: new Date(),
+        });
+        break;
+
+      case 'GetSceneList':
+        const sceneData = message.data as any;
+        // Extract scene names from the scenes array
+        const scenes = (sceneData.scenes as any[] || []).map(s => s.sceneName || s);
+        await this.instanceService.updateStatus(clientId, 'online', {
+          currentScene: sceneData.currentProgramSceneName as string | undefined,
+          scenes: scenes,
+          lastSeenAt: new Date(),
+        });
+        break;
     }
   }
 }

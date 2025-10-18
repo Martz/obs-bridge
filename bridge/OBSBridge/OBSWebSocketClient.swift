@@ -22,6 +22,9 @@ class OBSWebSocketClient: NSObject, ObservableObject {
     private var session: URLSession?
     private let settings: AppSettings
 
+    var onEventReceived: ((String, [String: Any]) -> Void)?
+    var onCommandResponse: ((String, Bool, [String: Any]?) -> Void)?
+
     init(settings: AppSettings) {
         self.settings = settings
         super.init()
@@ -163,8 +166,7 @@ class OBSWebSocketClient: NSObject, ObservableObject {
             handleIdentified()
         case 5: // Event
             print("OBS: Received event")
-            // Events from OBS - could be forwarded to website
-            break
+            handleEvent(json: json)
         case 7: // RequestResponse
             print("OBS: Received request response")
             handleRequestResponse(json: json)
@@ -244,6 +246,19 @@ class OBSWebSocketClient: NSObject, ObservableObject {
         send(message: versionRequest)
     }
 
+    private func handleEvent(json: [String: Any]) {
+        guard let d = json["d"] as? [String: Any],
+              let eventType = d["eventType"] as? String else {
+            print("OBS: Event missing required fields")
+            return
+        }
+
+        let eventData = d["eventData"] as? [String: Any] ?? [:]
+        print("OBS: Event type: \(eventType)")
+
+        onEventReceived?(eventType, eventData)
+    }
+
     private func handleRequestResponse(json: [String: Any]) {
         guard let d = json["d"] as? [String: Any],
               let requestId = d["requestId"] as? String else {
@@ -257,6 +272,12 @@ class OBSWebSocketClient: NSObject, ObservableObject {
                     self.obsVersion = obsVersion
                 }
             }
+        } else {
+            // Forward command response to the handler
+            let success = (d["requestStatus"] as? [String: Any])?["result"] as? Bool ?? true
+            let responseData = d["responseData"] as? [String: Any]
+            print("OBS: Command response - requestId: \(requestId), success: \(success)")
+            onCommandResponse?(requestId, success, responseData)
         }
     }
 
