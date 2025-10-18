@@ -1,0 +1,2 @@
+- Always use Context 7 MCP
+- Always use Playwright MCP to validate application fixes
