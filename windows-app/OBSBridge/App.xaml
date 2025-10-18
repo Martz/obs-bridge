@@ -1,0 +1,22 @@
+<Application x:Class="OBSBridge.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <!-- Application-wide resources -->
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="MinWidth" Value="100"/>
+        </Style>
+        
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="5,2"/>
+        </Style>
+        
+        <Style TargetType="Label">
+            <Setter Property="Margin" Value="5,2"/>
+        </Style>
+    </Application.Resources>
+</Application>
