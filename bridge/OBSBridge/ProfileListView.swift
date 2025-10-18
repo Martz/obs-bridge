@@ -46,7 +46,7 @@ struct ProfileListView: View {
                 }
             }
         }
-        .frame(width: 700, height: 500)
+        .frame(width: 900, height: 650)
         .sheet(isPresented: $showingAddProfile) {
             ProfileFormView { profile in
                 profileManager.addProfile(profile)
@@ -152,11 +152,14 @@ struct ProfileListView: View {
                         instanceManager.stopInstance(profile.id)
                     }
                 )
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                .listRowSeparator(.visible)
             }
             .onDelete { indexSet in
                 profileManager.deleteProfiles(at: indexSet)
             }
         }
+        .listStyle(.inset)
     }
 
     private func deleteProfile(_ profile: OBSProfile) {
@@ -180,51 +183,62 @@ struct ProfileRow: View {
     let onStop: () -> Void
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 16) {
             // Status indicator
             Circle()
                 .fill(statusColor)
-                .frame(width: 10, height: 10)
+                .frame(width: 12, height: 12)
 
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
+            VStack(alignment: .leading, spacing: 6) {
+                // Title row
+                HStack(spacing: 8) {
                     Text(profile.name)
-                        .font(.headline)
+                        .font(.system(size: 15, weight: .semibold))
 
                     if !profile.isEnabled {
-                        Text("Disabled")
-                            .font(.caption)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.secondary.opacity(0.2))
-                            .cornerRadius(4)
+                        StatusBadge(text: "Disabled", color: .secondary)
                     }
 
                     if instance?.isRunning == true {
-                        Text("Running")
-                            .font(.caption)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.green.opacity(0.2))
-                            .foregroundColor(.green)
-                            .cornerRadius(4)
+                        StatusBadge(text: "Running", color: .green)
                     }
                 }
 
-                Text("\(profile.obsHost):\(profile.obsPort)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
-                if !profile.notes.isEmpty {
-                    Text(profile.notes)
+                // Connection info
+                HStack(spacing: 6) {
+                    Image(systemName: "desktopcomputer")
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    Text("\(profile.obsHost):\(profile.obsPort)")
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+
+                    Text("•")
+                        .foregroundColor(.secondary)
+                        .font(.caption)
+
+                    Image(systemName: "person.text.rectangle")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(profile.clientID)
+                        .font(.system(size: 11, design: .monospaced))
+                        .foregroundColor(.secondary)
                         .lineLimit(1)
+                        .truncationMode(.middle)
                 }
 
-                // Connection status
+                // Notes if present
+                if !profile.notes.isEmpty {
+                    Text(profile.notes)
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                // Connection status when running
                 if let instance = instance, instance.isRunning {
-                    HStack(spacing: 8) {
+                    HStack(spacing: 10) {
                         ConnectionBadge(
                             label: "OBS",
                             isConnected: instance.isOBSConnected
@@ -234,9 +248,13 @@ struct ProfileRow: View {
                             isConnected: instance.isServerConnected
                         )
                         if let version = instance.obsVersion {
-                            Text("v\(version)")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
+                            HStack(spacing: 4) {
+                                Image(systemName: "info.circle")
+                                    .font(.caption2)
+                                Text("v\(version)")
+                                    .font(.system(size: 11))
+                            }
+                            .foregroundColor(.secondary)
                         }
                     }
                 }
@@ -245,43 +263,92 @@ struct ProfileRow: View {
             Spacer()
 
             // Controls
-            HStack(spacing: 8) {
-                Toggle("", isOn: Binding(
-                    get: { profile.isEnabled },
-                    set: { _ in onToggleEnabled() }
-                ))
-                .labelsHidden()
-                .help("Enable/Disable Profile")
+            HStack(spacing: 10) {
+                // Enable/Disable toggle
+                VStack(spacing: 2) {
+                    Toggle("", isOn: Binding(
+                        get: { profile.isEnabled },
+                        set: { _ in onToggleEnabled() }
+                    ))
+                    .labelsHidden()
+                    .help("Enable/Disable Profile")
 
+                    Text("Enable")
+                        .font(.system(size: 9))
+                        .foregroundColor(.secondary)
+                }
+
+                Divider()
+                    .frame(height: 40)
+
+                // Start/Stop button
                 if instance?.isRunning == true {
                     Button(action: onStop) {
-                        Image(systemName: "stop.fill")
+                        VStack(spacing: 4) {
+                            Image(systemName: "stop.fill")
+                                .font(.system(size: 16))
+                            Text("Stop")
+                                .font(.system(size: 9))
+                        }
                     }
                     .buttonStyle(.bordered)
+                    .tint(.red)
+                    .controlSize(.large)
                     .help("Stop Instance")
                 } else if profile.isEnabled {
                     Button(action: onStart) {
-                        Image(systemName: "play.fill")
+                        VStack(spacing: 4) {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 16))
+                            Text("Start")
+                                .font(.system(size: 9))
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .help("Start Instance")
+                } else {
+                    Button(action: {}) {
+                        VStack(spacing: 4) {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 16))
+                            Text("Start")
+                                .font(.system(size: 9))
+                        }
                     }
                     .buttonStyle(.bordered)
-                    .help("Start Instance")
+                    .controlSize(.large)
+                    .disabled(true)
                 }
 
                 Button(action: onEdit) {
-                    Image(systemName: "pencil")
+                    VStack(spacing: 4) {
+                        Image(systemName: "pencil")
+                            .font(.system(size: 16))
+                        Text("Edit")
+                            .font(.system(size: 9))
+                    }
                 }
                 .buttonStyle(.bordered)
+                .controlSize(.large)
                 .help("Edit Profile")
 
                 Button(action: onDelete) {
-                    Image(systemName: "trash")
+                    VStack(spacing: 4) {
+                        Image(systemName: "trash")
+                            .font(.system(size: 16))
+                        Text("Delete")
+                            .font(.system(size: 9))
+                    }
                 }
                 .buttonStyle(.bordered)
-                .foregroundColor(.red)
+                .tint(.red)
+                .controlSize(.large)
                 .help("Delete Profile")
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 4)
     }
 
     private var statusColor: Color {
@@ -325,23 +392,40 @@ struct StatisticView: View {
     }
 }
 
+struct StatusBadge: View {
+    let text: String
+    let color: Color
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: 11, weight: .medium))
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(color.opacity(0.15))
+            .foregroundColor(color)
+            .cornerRadius(6)
+    }
+}
+
 struct ConnectionBadge: View {
     let label: String
     let isConnected: Bool
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 5) {
             Circle()
                 .fill(isConnected ? Color.green : Color.red)
-                .frame(width: 6, height: 6)
+                .frame(width: 7, height: 7)
             Text(label)
-                .font(.caption2)
-                .foregroundColor(.secondary)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(isConnected ? .primary : .secondary)
         }
-        .padding(.horizontal, 6)
-        .padding(.vertical, 2)
-        .background(Color.secondary.opacity(0.1))
-        .cornerRadius(4)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(isConnected ? Color.green.opacity(0.1) : Color.secondary.opacity(0.08))
+        )
     }
 }
 

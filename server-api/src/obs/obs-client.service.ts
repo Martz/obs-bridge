@@ -22,6 +22,17 @@ export class OBSClientService {
     });
     this.logger.log(`✓ Client registered: ${clientId}`);
 
+    // Check if instance exists, create if not
+    const existingInstance = await this.instanceService.findByClientId(clientId);
+    if (!existingInstance) {
+      this.logger.log(`Auto-registering new instance: ${clientId}`);
+      await this.instanceService.create({
+        clientId,
+        name: clientId,
+        capacity: 1,
+      });
+    }
+
     // Update database status
     await this.instanceService.updateStatus(clientId, 'online', {
       connectedAt: new Date(),

@@ -238,9 +238,9 @@ export default function OBSInstancesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">OBS Instances</h1>
+          <h1 className="text-3xl font-bold tracking-tight">OBS Connections</h1>
           <p className="text-muted-foreground">
-            Manage and monitor OBS recording instances
+            Monitor and control connected OBS profiles. Each profile appears as an independent row.
           </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -252,17 +252,17 @@ export default function OBSInstancesPage() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Register New OBS Instance</DialogTitle>
+              <DialogTitle>Register New OBS Profile</DialogTitle>
               <DialogDescription>
-                Configure a new OBS instance that students can book for recordings.
+                Register a new OBS profile/connection. Note: Profiles are automatically registered when they first connect, so this is only needed for pre-registration.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCreateInstance} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="clientId">Client ID *</Label>
+                <Label htmlFor="clientId">Client ID (Profile ID) *</Label>
                 <Input
                   id="clientId"
-                  placeholder="e.g. studio-a-obs"
+                  placeholder="e.g. obs-studio-a-abc123"
                   value={newInstance.clientId}
                   onChange={(e) =>
                     setNewInstance({ ...newInstance, clientId: e.target.value })
@@ -270,20 +270,23 @@ export default function OBSInstancesPage() {
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  Must match the client ID in the OBS Bridge configuration.
+                  Must match the client ID in the OBS Bridge profile configuration. Each profile uses a unique client ID.
                 </p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="name">Instance Name *</Label>
+                <Label htmlFor="name">Profile Name *</Label>
                 <Input
                   id="name"
-                  placeholder="e.g. Studio A"
+                  placeholder="e.g. Studio A - Main Stream"
                   value={newInstance.name}
                   onChange={(e) =>
                     setNewInstance({ ...newInstance, name: e.target.value })
                   }
                   required
                 />
+                <p className="text-xs text-muted-foreground">
+                  Friendly name to identify this profile/connection
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="location">Location</Label>
@@ -377,29 +380,29 @@ export default function OBSInstancesPage() {
       {/* Instances Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Registered Instances</CardTitle>
+          <CardTitle>Connected Profiles</CardTitle>
         </CardHeader>
         <CardContent>
           {instances.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Monitor className="mb-4 h-12 w-12 text-muted-foreground" />
-              <h3 className="mb-2 text-lg font-semibold">No instances registered</h3>
+              <h3 className="mb-2 text-lg font-semibold">No profiles connected</h3>
               <p className="mb-4 text-sm text-muted-foreground">
-                Register an OBS instance to get started.
+                Start profiles in the OBS Bridge app to see them here. Each profile will appear as a separate row.
               </p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
+                  <TableHead>Profile Name</TableHead>
                   <TableHead>Location</TableHead>
-                  <TableHead>Client ID</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>State</TableHead>
-                  <TableHead>Scene</TableHead>
+                  <TableHead>Profile ID (Client ID)</TableHead>
+                  <TableHead>Connection</TableHead>
+                  <TableHead>Activity</TableHead>
+                  <TableHead>Current Scene</TableHead>
                   <TableHead>Connected At</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -472,12 +475,12 @@ export default function OBSInstancesPage() {
                         : 'Never'}
                     </TableCell>
                     <TableCell>
-                      <div className="flex gap-2">
+                      <div className="flex justify-end gap-2">
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => handleCommand(instance, 'start-recording')}
-                          disabled={instance.status !== 'online'}
+                          disabled={instance.status !== 'online' || instance.isRecording}
                           title="Start Recording"
                         >
                           <Video className="h-4 w-4" />
@@ -486,7 +489,7 @@ export default function OBSInstancesPage() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleCommand(instance, 'stop-recording')}
-                          disabled={instance.status !== 'online'}
+                          disabled={instance.status !== 'online' || !instance.isRecording}
                           title="Stop Recording"
                         >
                           <VideoOff className="h-4 w-4" />
@@ -498,7 +501,7 @@ export default function OBSInstancesPage() {
                             setEditingInstance(instance);
                             setIsEditDialogOpen(true);
                           }}
-                          title="Edit Instance"
+                          title="Edit Profile"
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -506,7 +509,7 @@ export default function OBSInstancesPage() {
                           size="sm"
                           variant="outline"
                           onClick={() => setDeleteInstanceId(instance.id)}
-                          title="Delete Instance"
+                          title="Delete Profile"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -525,14 +528,14 @@ export default function OBSInstancesPage() {
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Edit OBS Instance</DialogTitle>
+              <DialogTitle>Edit OBS Profile</DialogTitle>
               <DialogDescription>
-                Update instance metadata and configuration.
+                Update profile metadata and configuration.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleUpdateInstance} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-name">Instance Name *</Label>
+                <Label htmlFor="edit-name">Profile Name *</Label>
                 <Input
                   id="edit-name"
                   value={editingInstance.name}
@@ -582,7 +585,7 @@ export default function OBSInstancesPage() {
                 >
                   Cancel
                 </Button>
-                <Button type="submit">Update Instance</Button>
+                <Button type="submit">Update Profile</Button>
               </div>
             </form>
           </DialogContent>
@@ -598,7 +601,7 @@ export default function OBSInstancesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this instance. This action cannot be undone.
+              This will permanently delete this profile from the database. The profile can reconnect and will be auto-registered again.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
