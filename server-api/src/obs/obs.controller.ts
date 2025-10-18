@@ -6,13 +6,18 @@ import {
   Param,
   NotFoundException,
   BadRequestException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { OBSClientService } from './obs-client.service';
+import { OBSInstanceService } from './obs-instance.service';
 import { SendCommandDto, BroadcastCommandDto } from './dto/command.dto';
 
 @Controller('api')
 export class OBSController {
-  constructor(private readonly clientService: OBSClientService) {}
+  constructor(
+    private readonly clientService: OBSClientService,
+    private readonly instanceService: OBSInstanceService,
+  ) {}
 
   @Get('clients')
   getClients() {
@@ -21,12 +26,27 @@ export class OBSController {
   }
 
   @Post('command/:clientId')
-  sendCommand(
+  async sendCommand(
     @Param('clientId') clientId: string,
     @Body() commandDto: SendCommandDto,
   ) {
+    // Check if instance exists in database
+    const instance = await this.instanceService.findByClientId(clientId);
+    if (!instance) {
+      throw new NotFoundException(
+        `OBS instance with client ID '${clientId}' not found`,
+      );
+    }
+
+    // Check if WebSocket client is connected
     if (!this.clientService.hasClient(clientId)) {
-      throw new NotFoundException('Client not found');
+      // Update status to offline if needed
+      if (instance.status !== 'offline') {
+        await this.instanceService.updateStatus(clientId, 'offline');
+      }
+      throw new ServiceUnavailableException(
+        `OBS instance '${instance.name}' is not currently connected`,
+      );
     }
 
     try {
@@ -51,12 +71,27 @@ export class OBSController {
   }
 
   @Post('action/:clientId/:action')
-  sendAction(
+  async sendAction(
     @Param('clientId') clientId: string,
     @Param('action') action: string,
   ) {
+    // Check if instance exists in database
+    const instance = await this.instanceService.findByClientId(clientId);
+    if (!instance) {
+      throw new NotFoundException(
+        `OBS instance with client ID '${clientId}' not found`,
+      );
+    }
+
+    // Check if WebSocket client is connected
     if (!this.clientService.hasClient(clientId)) {
-      throw new NotFoundException('Client not found');
+      // Update status to offline if needed
+      if (instance.status !== 'offline') {
+        await this.instanceService.updateStatus(clientId, 'offline');
+      }
+      throw new ServiceUnavailableException(
+        `OBS instance '${instance.name}' is not currently connected`,
+      );
     }
 
     const commandMap: Record<string, string> = {

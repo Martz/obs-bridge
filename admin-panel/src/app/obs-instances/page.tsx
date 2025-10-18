@@ -32,6 +32,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -156,6 +163,25 @@ export default function OBSInstancesPage() {
       toast({
         title: 'Error',
         description: error.message || 'Failed to send command',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleSceneChange = async (instance: OBSInstance, sceneName: string) => {
+    try {
+      await apiClient.setScene(instance.clientId, sceneName);
+      toast({
+        title: 'Success',
+        description: `Scene changed to "${sceneName}" on ${instance.name}`,
+      });
+
+      // Optimistic update
+      mutate();
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to change scene',
         variant: 'destructive',
       });
     }
@@ -417,7 +443,28 @@ export default function OBSInstancesPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-sm">
-                      {instance.currentScene || 'N/A'}
+                      {instance.status === 'online' && instance.scenes && instance.scenes.length > 0 ? (
+                        <Select
+                          value={instance.currentScene || ''}
+                          onValueChange={(sceneName) => handleSceneChange(instance, sceneName)}
+                          disabled={instance.status !== 'online'}
+                        >
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select scene" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {instance.scenes.map((scene) => (
+                              <SelectItem key={scene} value={scene}>
+                                {scene}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          {instance.currentScene || 'N/A'}
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell className="text-sm">
                       {instance.connectedAt

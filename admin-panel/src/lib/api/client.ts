@@ -84,6 +84,18 @@ class APIClient {
     });
   }
 
+  async setScene(clientId: string, sceneName: string): Promise<CommandResponse> {
+    return this.request<CommandResponse>(`/api/command/${clientId}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        command: 'SetCurrentProgramScene',
+        params: {
+          sceneName,
+        },
+      }),
+    });
+  }
+
   // Instance management
   async getInstances(params?: {
     status?: string;
