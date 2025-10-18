@@ -4,15 +4,19 @@ export interface OBSInstance {
   id: string;
   clientId: string;
   name: string;
-  location: string;
+  location?: string;
+  description?: string;
+  capacity: number;
   status: 'online' | 'offline' | 'busy';
-  connectedAt?: Date;
-  lastSeen?: Date;
+  connectedAt?: Date | string;
+  lastSeenAt?: Date | string;
   scenes?: string[];
   currentScene?: string;
-  isStreaming?: boolean;
-  isRecording?: boolean;
+  isStreaming: boolean;
+  isRecording: boolean;
   metadata?: Record<string, unknown>;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 export interface Schedule {
@@ -117,3 +121,23 @@ export type OBSCommandType =
   | 'GetSceneList'
   | 'SetCurrentScene'
   | 'GetCurrentScene';
+
+// Instance management types
+export interface InstancesResponse {
+  instances: OBSInstance[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface InstanceStatsResponse {
+  total: number;
+  online: number;
+  offline: number;
+  busy: number;
+  streaming: number;
+  recording: number;
+}

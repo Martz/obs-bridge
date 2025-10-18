@@ -6,6 +6,9 @@ import type {
   BroadcastResponse,
   HealthResponse,
   OBSCommand,
+  OBSInstance,
+  InstancesResponse,
+  InstanceStatsResponse,
 } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -78,6 +81,70 @@ class APIClient {
   ): Promise<CommandResponse> {
     return this.request<CommandResponse>(`/api/action/${clientId}/${action}`, {
       method: 'POST',
+    });
+  }
+
+  // Instance management
+  async getInstances(params?: {
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<InstancesResponse> {
+    const query = new URLSearchParams();
+    if (params?.status) query.append('status', params.status);
+    if (params?.page) query.append('page', params.page.toString());
+    if (params?.limit) query.append('limit', params.limit.toString());
+
+    const queryString = query.toString();
+    return this.request<InstancesResponse>(
+      `/api/admin/instances${queryString ? `?${queryString}` : ''}`
+    );
+  }
+
+  async getInstanceStats(): Promise<InstanceStatsResponse> {
+    return this.request<InstanceStatsResponse>('/api/admin/instances/stats');
+  }
+
+  async getInstance(id: string): Promise<OBSInstance> {
+    return this.request<OBSInstance>(`/api/admin/instances/${id}`);
+  }
+
+  async createInstance(data: {
+    clientId: string;
+    name: string;
+    location?: string;
+    description?: string;
+    capacity?: number;
+    metadata?: Record<string, unknown>;
+  }): Promise<OBSInstance> {
+    return this.request<OBSInstance>('/api/admin/instances', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateInstance(
+    id: string,
+    data: Partial<{
+      name: string;
+      location: string;
+      description: string;
+      capacity: number;
+      metadata: Record<string, unknown>;
+    }>
+  ): Promise<OBSInstance> {
+    return this.request<OBSInstance>(`/api/admin/instances/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteInstance(id: string): Promise<void> {
+    await fetch(`${this.baseURL}/api/admin/instances/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
   }
 

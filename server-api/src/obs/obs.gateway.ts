@@ -24,12 +24,12 @@ export class OBSGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log('New OBS client attempting to connect...');
   }
 
-  handleDisconnect(client: WebSocket): void {
-    this.clientService.removeClient(client);
+  async handleDisconnect(client: WebSocket): Promise<void> {
+    await this.clientService.removeClient(client);
   }
 
   @SubscribeMessage('message')
-  handleMessage(client: WebSocket, payload: string): void {
+  async handleMessage(client: WebSocket, payload: string): Promise<void> {
     try {
       const data: OBSMessage = JSON.parse(payload);
       const { type, clientId } = data;
@@ -37,7 +37,7 @@ export class OBSGateway implements OnGatewayConnection, OnGatewayDisconnect {
       switch (type) {
         case 'register':
           if (clientId) {
-            this.clientService.registerClient(clientId, client);
+            await this.clientService.registerClient(clientId, client);
             // Send initial status requests
             this.clientService.sendCommand(clientId, 'GetStreamingStatus');
             this.clientService.sendCommand(clientId, 'GetSceneList');
@@ -50,7 +50,7 @@ export class OBSGateway implements OnGatewayConnection, OnGatewayDisconnect {
               `Event from ${clientId}: ${data.event}`,
               data.data,
             );
-            this.clientService.handleOBSEvent(clientId, data);
+            await this.clientService.handleOBSEvent(clientId, data);
           }
           break;
 

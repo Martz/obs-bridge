@@ -5,26 +5,41 @@ import {
   ClientInfo,
 } from './interfaces/obs-client.interface';
 import { OBSCommand, OBSMessage } from './interfaces/obs-message.interface';
+import { OBSInstanceService } from './obs-instance.service';
 
 @Injectable()
 export class OBSClientService {
   private readonly logger = new Logger(OBSClientService.name);
   private readonly clients: Map<string, OBSClient> = new Map();
 
-  registerClient(clientId: string, ws: WebSocket): void {
+  constructor(private readonly instanceService: OBSInstanceService) {}
+
+  async registerClient(clientId: string, ws: WebSocket): Promise<void> {
     this.clients.set(clientId, {
       ws,
       clientId,
       connected: new Date(),
     });
     this.logger.log(`✓ Client registered: ${clientId}`);
+
+    // Update database status
+    await this.instanceService.updateStatus(clientId, 'online', {
+      connectedAt: new Date(),
+      lastSeenAt: new Date(),
+    });
   }
 
-  removeClient(ws: WebSocket): void {
+  async removeClient(ws: WebSocket): Promise<void> {
     for (const [clientId, client] of this.clients.entries()) {
       if (client.ws === ws) {
         this.logger.log(`Client disconnected: ${clientId}`);
         this.clients.delete(clientId);
+
+        // Update database status
+        await this.instanceService.updateStatus(clientId, 'offline', {
+          lastSeenAt: new Date(),
+        });
+
         break;
       }
     }
@@ -106,23 +121,55 @@ export class OBSClientService {
     }
   }
 
-  handleOBSEvent(clientId: string, message: OBSMessage): void {
+  async handleOBSEvent(clientId: string, message: OBSMessage): Promise<void> {
     switch (message.event) {
       case 'StreamStarted':
         this.logger.log(`🔴 Stream started on ${clientId}`);
+        await this.instanceService.updateStatus(clientId, 'online', {
+          isStreaming: true,
+          lastSeenAt: new Date(),
+        });
         break;
+
       case 'StreamStopped':
         this.logger.log(`⏹️ Stream stopped on ${clientId}`);
+        await this.instanceService.updateStatus(clientId, 'online', {
+          isStreaming: false,
+          lastSeenAt: new Date(),
+        });
         break;
+
       case 'RecordingStarted':
         this.logger.log(`⏺️ Recording started on ${clientId}`);
+        await this.instanceService.updateStatus(clientId, 'online', {
+          isRecording: true,
+          lastSeenAt: new Date(),
+        });
         break;
+
       case 'RecordingStopped':
         this.logger.log(`⏹️ Recording stopped on ${clientId}`);
+        await this.instanceService.updateStatus(clientId, 'online', {
+          isRecording: false,
+          lastSeenAt: new Date(),
+        });
         break;
+
       case 'SwitchScenes':
         this.logger.log(`🎬 Scene changed on ${clientId}:`, message.data);
+        await this.instanceService.updateStatus(clientId, 'online', {
+          currentScene: (message.data as any)?.sceneName as string | undefined,
+          lastSeenAt: new Date(),
+        });
         break;
+
+      case 'SceneListChanged':
+        await this.instanceService.updateStatus(clientId, 'online', {
+          scenes: ((message.data as any)?.scenes as string[]) || [],
+          lastSeenAt: new Date(),
+        });
+        break;
+
       default:
         this.logger.log(
           `Event from ${clientId}: ${message.event}`,

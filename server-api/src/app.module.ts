@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OBSModule } from './obs/obs.module';
 import { HealthModule } from './health/health.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { HealthModule } from './health/health.module';
       rootPath: join(__dirname, '..', 'public'),
       serveRoot: '/',
     }),
+    PrismaModule,
     OBSModule,
     HealthModule,
   ],

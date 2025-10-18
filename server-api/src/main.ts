@@ -7,6 +7,12 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
+  // Enable CORS for frontend access
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    credentials: true,
+  });
+
   // Enable WebSocket support
   app.useWebSocketAdapter(new WsAdapter(app));
 
