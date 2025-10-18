@@ -19,6 +19,7 @@
 		OBS010 /* InstanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBS111 /* InstanceManager.swift */; };
 		OBS011 /* ProfileListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBS112 /* ProfileListView.swift */; };
 		OBS012 /* ProfileFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBS113 /* ProfileFormView.swift */; };
+		OBS013 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = OBS114 /* AppIcon.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		OBS111 /* InstanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceManager.swift; sourceTree = "<group>"; };
 		OBS112 /* ProfileListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListView.swift; sourceTree = "<group>"; };
 		OBS113 /* ProfileFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFormView.swift; sourceTree = "<group>"; };
+		OBS114 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 				OBS111 /* InstanceManager.swift */,
 				OBS112 /* ProfileListView.swift */,
 				OBS113 /* ProfileFormView.swift */,
+				OBS114 /* AppIcon.icns */,
 				OBS108 /* Info.plist */,
 			);
 			path = OBSBridge;
@@ -143,6 +146,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				OBS013 /* AppIcon.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
