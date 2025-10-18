@@ -46,6 +46,13 @@ x86/
 *.swo
 *~
 
+# Xcode
+*.xcuserstate
+*.xcuserdatad
+xcuserdata/
+DerivedData/
+*.xcworkspace/xcuserdata/
+
 # OS
 .DS_Store
 Thumbs.db
