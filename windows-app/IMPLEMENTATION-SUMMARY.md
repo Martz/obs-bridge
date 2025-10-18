@@ -120,10 +120,12 @@ windows-app/
 #### Protocol Support
 ✅ OBS WebSocket v5 (op codes 0, 1, 2, 6, 7)
 ✅ SHA-256 authentication
-✅ Command mapping (v4 names → v5 names)
+✅ Command name mapping (accepts v4 command names from website, converts to v5 for OBS)
 ✅ Parameter transformation
 ✅ JSON message serialization
 ✅ WebSocket message framing
+
+**Note**: The app uses OBS WebSocket v5 protocol exclusively when connecting to OBS, but provides backward compatibility by accepting v4-style command names from websites and automatically mapping them to v5 equivalents.
 
 ### 5. Documentation
 

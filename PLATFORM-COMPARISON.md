@@ -84,11 +84,13 @@ All platforms support the same OBS WebSocket v5 commands:
 
 | Protocol Feature | Windows | macOS | Python |
 |-----------------|---------|-------|--------|
-| OBS WebSocket v5 | ✅ | ✅ | ✅ |
-| OBS WebSocket v4 | ❌ | ❌ | ⚠️ Possible with older lib |
+| OBS WebSocket v5 | ✅ Full support | ✅ Full support | ✅ Full support |
+| OBS WebSocket v4 | ⚙️ Command mapping* | ⚙️ Command mapping* | ⚠️ Possible with older lib |
 | Custom Authentication | ✅ SHA-256 | ✅ SHA-256 | ✅ SHA-256 |
 | SSL/TLS for Website | ✅ | ✅ | ✅ |
 | Compression | ⏳ Planned | ⏳ Planned | ❌ |
+
+*Windows and macOS apps use WebSocket v5 protocol but accept v4 command names from websites (e.g., "StartStreaming") and automatically map them to v5 names (e.g., "StartStream"). The actual connection to OBS uses v5 protocol only.
 
 ## User Experience
 
