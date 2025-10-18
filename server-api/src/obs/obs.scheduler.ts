@@ -14,6 +14,18 @@ export class OBSScheduler {
     if (clientIds.length > 0) {
       this.logger.debug(`Pinging ${clientIds.length} client(s)`);
       this.clientService.pingAll();
+      
+      // Poll for status updates
+      this.logger.debug(`Polling status for ${clientIds.length} client(s)`);
+      for (const clientId of clientIds) {
+        try {
+          this.clientService.sendCommand(clientId, 'GetStreamingStatus');
+          this.clientService.sendCommand(clientId, 'GetRecordingStatus');
+          this.clientService.sendCommand(clientId, 'GetSceneList');
+        } catch (error) {
+          this.logger.error(`Failed to poll status for ${clientId}:`, error);
+        }
+      }
     }
   }
 }

@@ -42,10 +42,15 @@ export class OBSGateway implements OnGatewayConnection, OnGatewayDisconnect {
         case 'register':
           if (clientId) {
             await this.clientService.registerClient(clientId, client);
-            // Send initial status requests
-            this.clientService.sendCommand(clientId, 'GetStreamingStatus');
-            this.clientService.sendCommand(clientId, 'GetRecordingStatus');
-            this.clientService.sendCommand(clientId, 'GetSceneList');
+            // Defer initial status requests to allow bridge to fully connect
+            setTimeout(() => {
+              if (this.clientService.hasClient(clientId)) {
+                this.logger.log(`Sending initial status requests to ${clientId}`);
+                this.clientService.sendCommand(clientId, 'GetStreamingStatus');
+                this.clientService.sendCommand(clientId, 'GetRecordingStatus');
+                this.clientService.sendCommand(clientId, 'GetSceneList');
+              }
+            }, 1000); // 1 second delay
           }
           break;
 
