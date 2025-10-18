@@ -46,12 +46,19 @@ A comprehensive administrative panel for managing OBS (Open Broadcaster Software
 - Booking rules and limits
 - System information
 
+### Theme Support
+- Dark mode, light mode, and system theme support
+- Persistent theme preference across sessions
+- Smooth theme transitions
+- Theme toggle accessible from sidebar
+
 ## Technology Stack
 
 - **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui
+- **Theme**: next-themes (dark mode support)
 - **Icons**: Lucide React
 - **Date Management**: date-fns
 - **Form Handling**: React Hook Form (ready to integrate)
@@ -270,10 +277,10 @@ These features will be fully functional once the corresponding backend API endpo
    - Bulk operations
 
 5. **UI Improvements**
-   - Dark mode support
    - Accessibility enhancements
    - Mobile responsive design improvements
    - Loading states and error boundaries
+   - Enhanced animations and transitions
 
 ## Development Notes
 

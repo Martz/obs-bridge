@@ -63,6 +63,11 @@ The admin panel comes with the following pages:
 - Notification preferences
 - Booking rules
 
+### Theme Toggle
+- Click the sun/moon icon in the sidebar header to switch themes
+- Choose between light, dark, or system theme
+- Theme preference is automatically saved and persists across sessions
+
 ## Next Steps
 
 ### 1. Test with Server API

@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -65,8 +66,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <aside className="w-64 border-r bg-card">
         <div className="flex h-full flex-col">
           {/* Logo/Brand */}
-          <div className="flex h-16 items-center border-b px-6">
+          <div className="flex h-16 items-center justify-between border-b px-6">
             <h1 className="text-xl font-bold">OBS Admin</h1>
+            <ThemeToggle />
           </div>
 
           {/* Navigation */}
