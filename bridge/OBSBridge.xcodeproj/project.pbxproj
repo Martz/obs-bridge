@@ -14,6 +14,11 @@
 		OBS005 /* BridgeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBS105 /* BridgeManager.swift */; };
 		OBS006 /* OBSWebSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBS106 /* OBSWebSocketClient.swift */; };
 		OBS007 /* WebsiteWebSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBS107 /* WebsiteWebSocketClient.swift */; };
+		OBS008 /* OBSProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBS109 /* OBSProfile.swift */; };
+		OBS009 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBS110 /* ProfileManager.swift */; };
+		OBS010 /* InstanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBS111 /* InstanceManager.swift */; };
+		OBS011 /* ProfileListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBS112 /* ProfileListView.swift */; };
+		OBS012 /* ProfileFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBS113 /* ProfileFormView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +31,11 @@
 		OBS106 /* OBSWebSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OBSWebSocketClient.swift; sourceTree = "<group>"; };
 		OBS107 /* WebsiteWebSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebsiteWebSocketClient.swift; sourceTree = "<group>"; };
 		OBS108 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		OBS109 /* OBSProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OBSProfile.swift; sourceTree = "<group>"; };
+		OBS110 /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
+		OBS111 /* InstanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceManager.swift; sourceTree = "<group>"; };
+		OBS112 /* ProfileListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListView.swift; sourceTree = "<group>"; };
+		OBS113 /* ProfileFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFormView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +67,11 @@
 				OBS105 /* BridgeManager.swift */,
 				OBS106 /* OBSWebSocketClient.swift */,
 				OBS107 /* WebsiteWebSocketClient.swift */,
+				OBS109 /* OBSProfile.swift */,
+				OBS110 /* ProfileManager.swift */,
+				OBS111 /* InstanceManager.swift */,
+				OBS112 /* ProfileListView.swift */,
+				OBS113 /* ProfileFormView.swift */,
 				OBS108 /* Info.plist */,
 			);
 			path = OBSBridge;
@@ -145,6 +160,11 @@
 				OBS005 /* BridgeManager.swift in Sources */,
 				OBS006 /* OBSWebSocketClient.swift in Sources */,
 				OBS007 /* WebsiteWebSocketClient.swift in Sources */,
+				OBS008 /* OBSProfile.swift in Sources */,
+				OBS009 /* ProfileManager.swift in Sources */,
+				OBS010 /* InstanceManager.swift in Sources */,
+				OBS011 /* ProfileListView.swift in Sources */,
+				OBS012 /* ProfileFormView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

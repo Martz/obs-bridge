@@ -14,12 +14,14 @@ class BridgeManager: ObservableObject {
     private let settings: AppSettings
     private let obsClient: OBSWebSocketClient
     private let websiteClient: WebsiteWebSocketClient
+    private let instanceName: String
 
     private var cancellables = Set<AnyCancellable>()
     private var pendingRequests: [String: (command: String, timestamp: Date)] = [:]
 
-    init(settings: AppSettings) {
+    init(settings: AppSettings, instanceName: String = "Default") {
         self.settings = settings
+        self.instanceName = instanceName
         self.obsClient = OBSWebSocketClient(settings: settings)
         self.websiteClient = WebsiteWebSocketClient(settings: settings)
 
@@ -213,13 +215,20 @@ class BridgeManager: ObservableObject {
     }
 
     private func addLog(_ message: String, level: LogLevel) {
-        let entry = LogEntry(message: message, level: level, timestamp: Date())
+        let prefixedMessage = "[\(instanceName)] \(message)"
+        let entry = LogEntry(message: prefixedMessage, level: level, timestamp: Date(), instanceName: instanceName)
         DispatchQueue.main.async {
             self.logs.append(entry)
             // Keep only last 100 logs
             if self.logs.count > 100 {
                 self.logs.removeFirst(self.logs.count - 100)
             }
+        }
+    }
+
+    func clearLogs() {
+        DispatchQueue.main.async {
+            self.logs.removeAll()
         }
     }
 }
@@ -229,6 +238,14 @@ struct LogEntry: Identifiable {
     let message: String
     let level: LogLevel
     let timestamp: Date
+    let instanceName: String
+
+    init(message: String, level: LogLevel, timestamp: Date, instanceName: String = "Default") {
+        self.message = message
+        self.level = level
+        self.timestamp = timestamp
+        self.instanceName = instanceName
+    }
 }
 
 enum LogLevel {

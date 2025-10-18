@@ -12,29 +12,32 @@ class AppSettings: ObservableObject {
 
     // OBS Settings
     @Published var obsHost: String {
-        didSet { UserDefaults.standard.set(obsHost, forKey: "obsHost") }
+        didSet { saveIfShared("obsHost", obsHost) }
     }
     @Published var obsPort: String {
-        didSet { UserDefaults.standard.set(obsPort, forKey: "obsPort") }
+        didSet { saveIfShared("obsPort", obsPort) }
     }
     @Published var obsPassword: String {
-        didSet { UserDefaults.standard.set(obsPassword, forKey: "obsPassword") }
+        didSet { saveIfShared("obsPassword", obsPassword) }
     }
 
     // Website Settings
     @Published var websiteURL: String {
-        didSet { UserDefaults.standard.set(websiteURL, forKey: "websiteURL") }
+        didSet { saveIfShared("websiteURL", websiteURL) }
     }
     @Published var clientID: String {
-        didSet { UserDefaults.standard.set(clientID, forKey: "clientID") }
+        didSet { saveIfShared("clientID", clientID) }
     }
 
     // Auto-start
     @Published var autoConnect: Bool {
-        didSet { UserDefaults.standard.set(autoConnect, forKey: "autoConnect") }
+        didSet { saveIfShared("autoConnect", autoConnect) }
     }
 
+    private let isSharedInstance: Bool
+
     private init() {
+        self.isSharedInstance = true
         // Load from UserDefaults
         self.obsHost = UserDefaults.standard.string(forKey: "obsHost") ?? "localhost"
         self.obsPort = UserDefaults.standard.string(forKey: "obsPort") ?? "4455"
@@ -42,6 +45,22 @@ class AppSettings: ObservableObject {
         self.websiteURL = UserDefaults.standard.string(forKey: "websiteURL") ?? "ws://localhost:8000/obs"
         self.clientID = UserDefaults.standard.string(forKey: "clientID") ?? "obs-client-\(UUID().uuidString.prefix(8))"
         self.autoConnect = UserDefaults.standard.bool(forKey: "autoConnect")
+    }
+
+    // Initialiser for profile-based instances (not shared, no persistence)
+    init(obsHost: String, obsPort: String, obsPassword: String, websiteURL: String, clientID: String) {
+        self.isSharedInstance = false
+        self.obsHost = obsHost
+        self.obsPort = obsPort
+        self.obsPassword = obsPassword
+        self.websiteURL = websiteURL
+        self.clientID = clientID
+        self.autoConnect = false
+    }
+
+    private func saveIfShared(_ key: String, _ value: Any) {
+        guard isSharedInstance else { return }
+        UserDefaults.standard.set(value, forKey: key)
     }
 
     func validate() -> (isValid: Bool, errors: [String]) {

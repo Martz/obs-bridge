@@ -12,17 +12,11 @@ struct OBSBridgeApp: App {
         WindowGroup {
             ContentView()
         }
-        .commands {
-            CommandGroup(replacing: .appSettings) {
-                Button("Preferences...") {
-                    // Open settings window
-                }
-                .keyboardShortcut(",", modifiers: .command)
-            }
-        }
 
-        Settings {
-            SettingsView(settings: AppSettings.shared)
+        // Profile management window (accessible via ⌘,)
+        Window("Manage Profiles", id: "profiles") {
+            ProfileListView()
         }
+        .keyboardShortcut(",", modifiers: .command)
     }
 }
