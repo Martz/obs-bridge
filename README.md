@@ -1,6 +1,6 @@
 # OBS Recording Scheduler
 
-Applications that connect OBS Studio to a central website for remote control.
+Applications that connect OBS Studio to a central website for remote control, scene selection, recording stop/start.
 
 ## Available Platforms
 
