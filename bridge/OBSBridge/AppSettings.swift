@@ -28,6 +28,9 @@ class AppSettings: ObservableObject {
     @Published var clientID: String {
         didSet { saveIfShared("clientID", clientID) }
     }
+    @Published var authToken: String {
+        didSet { saveIfShared("authToken", authToken) }
+    }
 
     // Auto-start
     @Published var autoConnect: Bool {
@@ -44,17 +47,19 @@ class AppSettings: ObservableObject {
         self.obsPassword = UserDefaults.standard.string(forKey: "obsPassword") ?? ""
         self.websiteURL = UserDefaults.standard.string(forKey: "websiteURL") ?? "ws://localhost:8000/obs"
         self.clientID = UserDefaults.standard.string(forKey: "clientID") ?? "obs-client-\(UUID().uuidString.prefix(8))"
+        self.authToken = UserDefaults.standard.string(forKey: "authToken") ?? ""
         self.autoConnect = UserDefaults.standard.bool(forKey: "autoConnect")
     }
 
     // Initialiser for profile-based instances (not shared, no persistence)
-    init(obsHost: String, obsPort: String, obsPassword: String, websiteURL: String, clientID: String) {
+    init(obsHost: String, obsPort: String, obsPassword: String, websiteURL: String, clientID: String, authToken: String = "") {
         self.isSharedInstance = false
         self.obsHost = obsHost
         self.obsPort = obsPort
         self.obsPassword = obsPassword
         self.websiteURL = websiteURL
         self.clientID = clientID
+        self.authToken = authToken
         self.autoConnect = false
     }
 
@@ -84,6 +89,10 @@ class AppSettings: ObservableObject {
 
         if clientID.isEmpty {
             errors.append("Client ID cannot be empty")
+        }
+
+        if authToken.isEmpty {
+            errors.append("Authentication token cannot be empty")
         }
 
         return (errors.isEmpty, errors)

@@ -38,12 +38,24 @@ class WebsiteWebSocketClient: NSObject, ObservableObject {
         print("Website: Starting connection to \(settings.websiteURL)")
         connectionState = .connecting
 
-        guard let url = URL(string: settings.websiteURL) else {
+        guard var urlComponents = URLComponents(string: settings.websiteURL) else {
             print("Website: Invalid URL: \(settings.websiteURL)")
             connectionState = .error("Invalid website URL")
             return
         }
 
+        // Add auth token as query parameter
+        var queryItems = urlComponents.queryItems ?? []
+        queryItems.append(URLQueryItem(name: "token", value: settings.authToken))
+        urlComponents.queryItems = queryItems
+
+        guard let url = urlComponents.url else {
+            print("Website: Failed to construct URL with token")
+            connectionState = .error("Failed to construct URL with token")
+            return
+        }
+
+        print("Website: Connecting with authentication")
         webSocketTask = session?.webSocketTask(with: url)
         webSocketTask?.resume()
 

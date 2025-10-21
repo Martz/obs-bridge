@@ -20,6 +20,11 @@ model OBSInstance {
   capacity    Int      @default(1)
   metadata    Json?
 
+  // Authentication
+  apiToken        String?  @unique
+  tokenCreatedAt  DateTime?
+  tokenLastUsedAt DateTime?
+
   // Status tracking (updated via WebSocket events)
   status          String   @default("offline") // online, offline, busy
   isStreaming     Boolean  @default(false)
@@ -39,6 +44,7 @@ model OBSInstance {
 
   @@index([status])
   @@index([clientId])
+  @@index([apiToken])
   @@map("obs_instances")
 }
 

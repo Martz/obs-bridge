@@ -20,6 +20,7 @@ struct OBSProfile: Codable, Identifiable, Equatable {
     // Server Connection Settings
     var websiteURL: String
     var clientID: String
+    var authToken: String
 
     // Optional metadata
     var notes: String
@@ -35,6 +36,7 @@ struct OBSProfile: Codable, Identifiable, Equatable {
         obsPassword: String = "",
         websiteURL: String = "ws://localhost:8000/obs",
         clientID: String? = nil,
+        authToken: String = "",
         notes: String = "",
         createdAt: Date = Date(),
         lastModified: Date = Date()
@@ -47,6 +49,7 @@ struct OBSProfile: Codable, Identifiable, Equatable {
         self.obsPassword = obsPassword
         self.websiteURL = websiteURL
         self.clientID = clientID ?? "obs-\(name.lowercased().replacingOccurrences(of: " ", with: "-"))-\(UUID().uuidString.prefix(8))"
+        self.authToken = authToken
         self.notes = notes
         self.createdAt = createdAt
         self.lastModified = lastModified
@@ -78,6 +81,10 @@ struct OBSProfile: Codable, Identifiable, Equatable {
 
         if clientID.isEmpty {
             errors.append("Client ID cannot be empty")
+        }
+
+        if authToken.isEmpty {
+            errors.append("Authentication token cannot be empty")
         }
 
         return (errors.isEmpty, errors)
