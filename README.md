@@ -1,15 +1,29 @@
-# OBS Recording Scheduler
+# OBS Bridge
 
-Applications that connect OBS Studio to a central website for remote control, scene selection, recording stop/start.
+A comprehensive remote control and scheduling system for OBS Studio (Open Broadcaster Software). This monorepo contains multiple interconnected applications that work together to enable remote management of OBS recording sessions from anywhere.
 
-## Available Platforms
+## 🎯 What is OBS Bridge?
 
-- **🐍 Python Bridge** - Cross-platform command-line tool ([Setup Guide](#python-bridge-setup))
-- **🍎 macOS App** - Native macOS application ([Bridge Documentation](bridge/README.md))
+OBS Bridge is a production-ready system that allows you to remotely control and schedule OBS Studio instances from anywhere. Using a bridge pattern architecture, it connects your local OBS installations to a central server, enabling remote control through web interfaces while maintaining security with outbound-only connections (firewall-friendly).
+
+## 🚀 Available Platforms
+
+- **🍎 macOS App** - Native macOS application with GUI ([Bridge Documentation](bridge/README.md))
 - **🪟 Windows App** - Native Windows 11 application ([Windows Documentation](windows-app/README.md))
-A complete system for scheduling and remotely controlling OBS (Open Broadcaster Software) recording sessions. This monorepo contains multiple interconnected applications that work together to provide a comprehensive OBS remote control and scheduling solution.
+- **🐍 Python Bridge** - Cross-platform command-line tool for Linux/macOS/Windows ([Setup Guide](#python-bridge-setup))
 
-## 🎯 Project Overview
+## 🔑 Key Features
+
+- ✅ **Remote Control** - Control OBS from anywhere via secure WebSocket connections
+- ✅ **Session Scheduling** - Schedule recording sessions through an intuitive web interface
+- ✅ **Multi-Instance Management** - Manage multiple OBS installations from a central control panel
+- ✅ **Real-Time Events** - Stream OBS events (scene changes, streaming status) in real-time
+- ✅ **Firewall Friendly** - Outbound connections only, no port forwarding required
+- ✅ **Cross-Platform** - Native apps for macOS and Windows, Python CLI for all platforms
+- ✅ **Secure Authentication** - Password-protected connections with credential storage
+- ✅ **Auto-Reconnection** - Automatic reconnection handling for reliable operation
+
+## 📊 How It Works
 
 ```
 ┌─────────────┐         WebSocket          ┌──────────────────┐
@@ -24,12 +38,21 @@ A complete system for scheduling and remotely controlling OBS (Open Broadcaster 
                                                │   OBS    │
                                                │  Studio  │
                                                └──────────┘
-This system allows you to:
+```
+
+The bridge application runs on the same machine as OBS Studio and maintains a persistent WebSocket connection to your central server. Commands from the web interface are routed through the server to the appropriate bridge, which then executes them on the local OBS instance.
+
+## 💡 What Can You Do?
+
+With OBS Bridge, you can:
 
 - **Schedule OBS recording sessions** through a web interface
-- **Remotely control OBS instances** from anywhere via WebSocket
-- **Manage multiple OBS installations** from a central control panel
-- **Administer bookings, users, and schedules** through an admin dashboard
+- **Start/stop streaming and recording** remotely
+- **Switch scenes** from anywhere
+- **Monitor OBS status** in real-time (streaming, recording, current scene)
+- **Manage bookings and users** through an admin dashboard
+- **Control multiple OBS instances** from a single control panel
+- **Receive real-time events** when scenes change or streaming status updates
 
 ## 📦 Project Structure
 
@@ -59,16 +82,7 @@ open OBSBridge.xcodeproj
 
 📖 [Full Documentation](bridge/README.md) | [Quick Start Guide](bridge/QUICKSTART.md)
 
-- ✅ Connects OBS to your website (outbound connection, firewall friendly)
-- ✅ Remote control OBS from anywhere
-- ✅ Real time event streaming (scene changes, streaming status, etc.)
-- ✅ Supports multiple OBS commands
-- ✅ Automatic reconnection handling
-- ✅ Secure password authentication
-- ✅ Native applications for macOS and Windows with GUI
-- ✅ Cross-platform Python CLI version
-
-## Quick Start
+## 🎬 Quick Start
 
 ### For Windows 11 Users
 👉 [Windows Quick Start Guide](windows-app/QUICKSTART.md)
