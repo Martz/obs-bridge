@@ -2,6 +2,8 @@
 
 A native macOS application that connects OBS Studio to a central website for remote control.
 
+[<< Back to Main README](../README.md)
+
 ## Features
 
 - ✅ Native macOS SwiftUI interface

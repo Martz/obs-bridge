@@ -2,6 +2,8 @@
 
 A NestJS-based WebSocket and REST API server for controlling OBS Studio remotely via the OBS Bridge.
 
+[<< Back to Main README](../README.md)
+
 ## Features
 
 - WebSocket server for OBS client connections

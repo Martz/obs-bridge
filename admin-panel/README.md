@@ -1,6 +1,8 @@
 # OBS Bridge Admin Panel
 
-A comprehensive administrative panel for managing OBS (Open Broadcaster Software) instances, recording schedules, and student bookings. Built with Next.js 15, TypeScript, and Tailwind CSS.
+A comprehensive administrative panel for managing OBS (Open Broadcaster Software) instances, recording schedules, and student bookings. Built with Next.js 14, TypeScript, and Tailwind CSS.
+
+[<< Back to Main README](../README.md)
 
 ## Features
 
@@ -54,7 +56,7 @@ A comprehensive administrative panel for managing OBS (Open Broadcaster Software
 
 ## Technology Stack
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui
@@ -334,4 +336,4 @@ For issues, questions, or contributions, please refer to the main project reposi
 
 ## Licence
 
-UNLICENSED - Private project
+This project is licensed under the MIT License. See the [LICENSE](../LICENSE) file for details.
