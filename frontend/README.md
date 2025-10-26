@@ -2,6 +2,8 @@
 
 A modern React application for scheduling OBS (Open Broadcaster Software) recording sessions. Users can browse available time slots, select OBS instances, and book recording sessions.
 
+[<< Back to Main README](../README.md)
+
 ## Features
 
 - **Calendar View**: Interactive calendar to select recording dates
